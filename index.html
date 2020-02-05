@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="es">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+		<link rel="icon" href="favicon.ico">
+		<title>Pokedex de Prueba</title>
+		<style>
+			body {
+				padding-top: 50px;
+			}
+		</style>
+	</head>
+	<body>
+		<main class="container">
+			<h1 class="display-3">Demostración JSON</h1>
+			<div class="row">
+				<div class="col-lg-6">
+					<div class="card mb-3 shadow">
+						<div class="card-header text-white bg-danger"><strong>Pokedex</strong></div>
+						<div class="card-body">
+							<form id="p-form" class="form-inline">
+								<div class="form-group">
+									<label for="id_poke">ID Pokemon:</label>
+									<input type="number" id="id_poke" class="form-control mx-sm-3" min="1" required>
+									<button type="submit" class="btn btn-danger">Cargar</button>
+								</div>
+							</form>
+							<hr>
+							<div class="media">
+								<img id="p-img" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/0.png" class="mr-3" alt="...">
+								<div class="media-body">
+									<h5 id="p-nombre" class="text-capitalize mt-0">?????</h5>
+									<strong>Habilidades:</strong>
+									<ul id="p-habilidades"></ul>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-lg-6">
+					<div class="card mb-3 shadow">
+						<div class="card-header text-white bg-dark"><strong>Registros de la aplicación</strong></div>
+						<div class="card-body">
+							<ol id="pet"></ol>
+						</div>
+					</div>
+				</div>
+			</div>
+		</main>
+
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+		<script>
+			$(function() {
+				let pid = 0;
+				$('#pet').append('<li>JS Cargado!</li>');
+				$('#p-form').submit(function(e) {
+					e.preventDefault();
+					pid = $('#id_poke').val();
+					$('#p-habilidades').html('');
+					$('#pet').append('<li>Buscando ID: ' + pid + '</li>');
+					$.ajax({
+						method: 'GET',
+						url: 'https://pokeapi.co/api/v2/pokemon/' + pid,
+						dataType: 'json',
+						async: true,
+					})
+					.done(function(datos) {
+						$('#p-nombre').text(datos.name);
+						$('img#p-img').attr('src', datos.sprites.front_default);
+						datos.abilities.forEach(H => {
+                            $('#p-habilidades').append('<li>' + H.ability.name + '</li>');
+                        });
+						$('#pet').append('<li>Cargado ID: ' + pid + '</li>');
+					})
+					.fail(function() {
+						$('#p-nombre').text('Error');
+						$('img#p-img').attr('src', 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/0.png');
+						$('#pet').append('<li>Error ID: ' + pid + '</li>');
+					});
+				});
+			});
+		</script>
+	</body>
+</html>
