@@ -105,6 +105,7 @@
 
 								do {
 									var evoDetails = evoData['evolution_details'][0];
+									console.log(evoDetails);
 
 									evoChain.push({
 										"species_name": evoData.species.name,
@@ -120,9 +121,17 @@
 									if (evolution.min_level === 1) {
 										pev.append('<li>' + '<span class="text-capitalize">' + evolution.species_name + '</span>' + '</li>');
 									} else {
-										pev.append('<li>' + '<span class="text-capitalize">' + evolution.species_name + '</span>' + ' desde ' + evolution.min_level + '</li>');
+										if (evolution.trigger_name == 'level-up' && evolution.min_level != null) {
+											pev.append('<li>' + '<span class="text-capitalize">' + evolution.species_name + '</span>' + ' desde nivel ' + evolution.min_level + '</li>');
+										} else if (evolution.trigger_name == 'use-item') {
+											pev.append('<li>' + '<span class="text-capitalize">' + evolution.species_name + '</span>' + ' con ' + evolution.item.name + '</li>');
+										} else {
+											pev.append('<li>' + '<span class="text-capitalize">' + evolution.species_name + '</li>');
+										}
 									}
 								});
+
+								console.log(evoChain);
 							});
 						});
 					})
