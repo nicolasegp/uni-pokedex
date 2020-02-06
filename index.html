@@ -122,11 +122,13 @@
 										pev.append('<li>' + '<span class="text-capitalize">' + evolution.species_name + '</span>' + '</li>');
 									} else {
 										if (evolution.trigger_name == 'level-up' && evolution.min_level != null) {
-											pev.append('<li>' + '<span class="text-capitalize">' + evolution.species_name + '</span>' + ' desde nivel ' + evolution.min_level + '</li>');
+											pev.append('<li><span class="text-capitalize">' + evolution.species_name + '</span>' + ' desde nivel ' + evolution.min_level + '</li>');
 										} else if (evolution.trigger_name == 'use-item') {
-											pev.append('<li>' + '<span class="text-capitalize">' + evolution.species_name + '</span>' + ' con ' + evolution.item.name + '</li>');
+											pev.append('<li><span class="text-capitalize">' + evolution.species_name + '</span>' + ' con ' + evolution.item.name + '</li>');
+										} else if (evolution.trigger_name == 'trade') {
+											pev.append('<li><span class="text-capitalize">' + evolution.species_name + '</span>' + ' por intercambio</li>');
 										} else {
-											pev.append('<li>' + '<span class="text-capitalize">' + evolution.species_name + '</li>');
+											pev.append('<li><span class="text-capitalize">' + evolution.species_name + '</span></li>');
 										}
 									}
 								});
