@@ -35,6 +35,9 @@
 									<h5 id="p-nombre" class="text-capitalize mt-0">?????</h5>
 									<strong>Habilidades:</strong>
 									<ul id="p-habilidades"></ul>
+
+									<strong>Cadena de evoluciones:</strong>
+									<ol id="p-evoluciones"></ol>
 								</div>
 							</div>
 						</div>
@@ -57,12 +60,18 @@
 			$(function() {
 				let pid = 0;
 				let jrd = $('#json-renderer');
-				let phb = $('#p-habilidades')
+				let phb = $('#p-habilidades');
+				let pev = $('#p-evoluciones');
+
+
 				$('#p-form').submit(function(e) {
 					e.preventDefault();
+
 					pid = $('#p-id').val();
 					phb.html('');
-					jrd.text('Cargando...')
+					pev.html('');
+					jrd.text('Cargando...');
+
 					$.ajax({
 						method: 'GET',
 						url: 'https://pokeapi.co/api/v2/pokemon/' + pid,
@@ -74,8 +83,48 @@
 						$('#p-nombre').text(datos.name);
 						$('img#p-img').attr('src', datos.sprites.front_default);
 						datos.abilities.forEach(H => {
-                            phb.append('<li>' + H.ability.name + '</li>');
+							phb.append('<li class="text-capitalize">' + H.ability.name + '</li>');
                         });
+
+						$.ajax({
+							method: 'GET',
+							url: datos.species.url,
+							dataType: 'json',
+							async: true,
+						})
+						.done(function(especies) {
+							$.ajax({
+								method: 'GET',
+								url: especies.evolution_chain.url,
+								dataType: 'json',
+								async: true,
+							})
+							.done(function(evoluciones) {
+								var evoChain = [];
+								var evoData = evoluciones.chain;
+
+								do {
+									var evoDetails = evoData['evolution_details'][0];
+
+									evoChain.push({
+										"species_name": evoData.species.name,
+										"min_level": !evoDetails ? 1 : evoDetails.min_level,
+										"trigger_name": !evoDetails ? null : evoDetails.trigger.name,
+										"item": !evoDetails ? null : evoDetails.item
+									});
+
+									evoData = evoData['evolves_to'][0];
+								} while (!!evoData && evoData.hasOwnProperty('evolves_to'));
+
+								evoChain.forEach(evolution => {
+									if (evolution.min_level === 1) {
+										pev.append('<li>' + '<span class="text-capitalize">' + evolution.species_name + '</span>' + '</li>');
+									} else {
+										pev.append('<li>' + '<span class="text-capitalize">' + evolution.species_name + '</span>' + ' desde ' + evolution.min_level + '</li>');
+									}
+								});
+							});
+						});
 					})
 					.fail(function() {
 						$('#json-renderer').jsonViewer({error:"No se pudo cargar la API"}, {collapsed: true, rootCollapsable: false, withQuotes: false, withLinks: false});
