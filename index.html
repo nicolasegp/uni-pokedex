@@ -79,7 +79,9 @@
 					})
 					.fail(function() {
 						$('#json-renderer').jsonViewer({error:"No se pudo cargar la API"}, {collapsed: true, rootCollapsable: false, withQuotes: false, withLinks: false});
+						$('#p-nombre').text('?????');
 						$('img#p-img').attr('src', 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/0.png');
+						phb.html('');
 					});
 				});
 			});
