@@ -4,6 +4,7 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+		<link rel="stylesheet" href="json-viewer/jquery.json-viewer.css">
 		<link rel="icon" href="favicon.ico">
 		<title>Pokedex de Prueba</title>
 		<style>
@@ -22,8 +23,8 @@
 						<div class="card-body">
 							<form id="p-form" class="form-inline">
 								<div class="form-group">
-									<label for="id_poke">ID Pokemon:</label>
-									<input type="number" id="id_poke" class="form-control mx-sm-3" min="1" required>
+									<label for="p-id">ID Pokemon:</label>
+									<input type="number" id="p-id" class="form-control mx-sm-3" min="1" required>
 									<button type="submit" class="btn btn-danger">Cargar</button>
 								</div>
 							</form>
@@ -41,9 +42,9 @@
 				</div>
 				<div class="col-lg-6">
 					<div class="card mb-3 shadow">
-						<div class="card-header text-white bg-dark"><strong>Registros de la aplicación</strong></div>
+						<div class="card-header text-white bg-dark"><strong>Respuesta API</strong></div>
 						<div class="card-body">
-							<ol id="pet"></ol>
+							<pre id="json-renderer"></pre>
 						</div>
 					</div>
 				</div>
@@ -51,15 +52,17 @@
 		</main>
 
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+		<script src="json-viewer/jquery.json-viewer.js"></script>
 		<script>
 			$(function() {
 				let pid = 0;
-				$('#pet').append('<li>JS Cargado!</li>');
+				let jrd = $('#json-renderer');
+				let phb = $('#p-habilidades')
 				$('#p-form').submit(function(e) {
 					e.preventDefault();
-					pid = $('#id_poke').val();
-					$('#p-habilidades').html('');
-					$('#pet').append('<li>Buscando ID: ' + pid + '</li>');
+					pid = $('#p-id').val();
+					phb.html('');
+					jrd.text('Cargando...')
 					$.ajax({
 						method: 'GET',
 						url: 'https://pokeapi.co/api/v2/pokemon/' + pid,
@@ -67,17 +70,16 @@
 						async: true,
 					})
 					.done(function(datos) {
+						$('#json-renderer').jsonViewer(datos, {collapsed: true, rootCollapsable: false, withQuotes: false, withLinks: false});
 						$('#p-nombre').text(datos.name);
 						$('img#p-img').attr('src', datos.sprites.front_default);
 						datos.abilities.forEach(H => {
-                            $('#p-habilidades').append('<li>' + H.ability.name + '</li>');
+                            phb.append('<li>' + H.ability.name + '</li>');
                         });
-						$('#pet').append('<li>Cargado ID: ' + pid + '</li>');
 					})
 					.fail(function() {
-						$('#p-nombre').text('Error');
+						$('#json-renderer').jsonViewer({error:"No se pudo cargar la API"}, {collapsed: true, rootCollapsable: false, withQuotes: false, withLinks: false});
 						$('img#p-img').attr('src', 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/0.png');
-						$('#pet').append('<li>Error ID: ' + pid + '</li>');
 					});
 				});
 			});
