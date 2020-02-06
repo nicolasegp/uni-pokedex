@@ -3,6 +3,7 @@ $(function() {
 	let p_n = $('#p-nombre');
 	let p_i = $('img#p-img');
 	let p_c = $('#p-captura');
+	let p_p = $('#p-peso');
 	let p_h = $('#p-habilidades');
 	let p_e = $('#p-evoluciones');
 	let jrd = $('#json-renderer');
@@ -31,6 +32,7 @@ $(function() {
 		.done(function(datos) {
 			jrd.jsonViewer(datos, jop);
 			p_n.text(datos.name);
+			p_p.text((datos.weight/10)+ ' Kg');
 			p_i.attr('src', datos.sprites.front_default);
 			datos.abilities.forEach(H => {
 				p_h.append('<li class="text-capitalize">' + H.ability.name + '</li>');
@@ -43,6 +45,7 @@ $(function() {
 				async: true,
 			})
 			.done(function(especies) {
+				p_c.text(especies.capture_rate);
 				$.ajax({
 					method: 'GET',
 					url: especies.evolution_chain.url,
